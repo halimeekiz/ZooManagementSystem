@@ -1,23 +1,17 @@
-﻿using System;                               // Console, AppContext
-using System.Diagnostics;                   // ProcessStartInfo
-using System.IO;                            // Path, File
-using System.Runtime.InteropServices;       // RuntimeInformation
-using WMPLib;                               // Windows Media Player (Windows)
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace ZooManagementSystem
 {
-    // Denne klasse er en lille hjælper, der gør det nemt at afspille dyre-lyde på alle platforme
-    // uden at blande OS-logik ind i dine dyreklasser. På Windows bruger den Windows Media Player (WMPLib).
-    // På macOS kalder den afplay, og på Linux prøver den ffplay/mpg123 (falder tilbage til xdg-open).
     internal static class AudioPlayer
     {
-        // Holder WMP i live (ellers kan GC stoppe lyden)
-        private static WindowsMediaPlayer? _wmp;
+        // Hold COM-objektet i live (Windows)
+        private static object? _wmp;
 
-        // Afspiler lydfil. relativePath: fx "AnimalSounds/lion-sound.mp3"
         public static void Play(string relativePath)
         {
-            // Fuld sti ud fra programmets outputmappe
             var path = Path.IsPathRooted(relativePath)
                 ? relativePath
                 : Path.Combine(AppContext.BaseDirectory, relativePath);
@@ -28,30 +22,33 @@ namespace ZooManagementSystem
                 return;
             }
 
-            // Windows → brug WMPLib
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 try
                 {
-                    _wmp ??= new WindowsMediaPlayer();
-                    _wmp.settings.mute = false;
-                    _wmp.settings.volume = 100;   // 0–100
-                    _wmp.URL = path;
-                    _wmp.controls.play();
-                    return;
+                    var t = Type.GetTypeFromProgID("WMPlayer.OCX", throwOnError: false);
+                    if (t != null)
+                    {
+                        _wmp ??= Activator.CreateInstance(t)!;
+                        dynamic player = _wmp;
+                        player.settings.mute = false;
+                        player.settings.volume = 100; // 0–100
+                        player.URL = path;
+                        player.controls.play();
+                        return;
+                    }
+                    Console.WriteLine("[WMP] Windows Media Player COM-objekt ikke fundet.");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[WMP] Kunne ikke afspille: {ex.Message}");
                 }
             }
-            // macOS → bruger systemets 'afplay'
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 TryStart("afplay", $"\"{path}\"");
                 return;
             }
-            // Linux → prøv ffplay/mpg123, ellers xdg-open (GUI)
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 if (TryStart("ffplay", $"-nodisp -autoexit \"{path}\"")) return;
@@ -63,7 +60,6 @@ namespace ZooManagementSystem
             Console.WriteLine("[INFO] Ukendt platform – ingen afspiller fundet.");
         }
 
-        // Starter et CLI-program stille (returnerer false hvis ikke findes)
         private static bool TryStart(string fileName, string args)
         {
             try
@@ -79,6 +75,16 @@ namespace ZooManagementSystem
             catch
             {
                 return false;
+            }
+        }
+
+        // (valgfrit) kald fx ved app-exit, hvis du vil frigive COM eksplicit:
+        public static void Dispose()
+        {
+            if (_wmp != null)
+            {
+                try { Marshal.FinalReleaseComObject(_wmp); } catch { /* ignore */ }
+                _wmp = null;
             }
         }
     }
