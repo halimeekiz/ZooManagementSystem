@@ -3,7 +3,9 @@ using ZooManagementSystem.Core;   // Animal (har SayAndPlay/PlaySound)
 
 namespace ZooManagementSystem.AnimalTypes
 {
-    // Klassen Lion arver fra Animal (nedarvning)
+    // Jeg bruger nedarvning her, fordi Lion arver fra Animal.
+    // På den måde genbruger jeg fælles egenskaber (Name, Species, Birthdate) fra baseklassen.
+
     public class Lion : Animal
     {
         // Constructor: giver navn og fødselsdato videre til Animal via base(...)

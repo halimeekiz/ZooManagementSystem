@@ -63,7 +63,7 @@ namespace ZooManagementSystem.People
             while (true)
             {
                 key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Enter) 
+                if (key.Key == ConsoleKey.Enter)
                     break;
 
                 if (key.Key == ConsoleKey.Backspace)
@@ -145,7 +145,6 @@ namespace ZooManagementSystem.People
             Console.WriteLine($"{Name} fodrer dyrene i {AssignedEnclosure!.Name}.");
             Pause();
         }
-
         public void CleanEnclosure()
         {
             if (!HasValidEnclosure())
@@ -168,12 +167,11 @@ namespace ZooManagementSystem.People
             AssignedEnclosure!.ListAnimals();
             Pause();
         }
-
         public void DailyRoutine()
         {
             if (!HasValidEnclosure())
-            { 
-                Pause(); 
+            {
+                Pause();
                 return;
             }
 
@@ -192,7 +190,6 @@ namespace ZooManagementSystem.People
             }
             Pause();
         }
-
         private bool HasValidEnclosure()
         {
             if (AssignedEnclosure == null)

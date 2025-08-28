@@ -26,6 +26,8 @@ namespace ZooManagementSystem.Environment
             Console.WriteLine($"{animal.Name} ({animal.Species}) er tilføjet til {Name}.");
         }
 
+        // Har ikke tilføjet den til menuen, men sådan er metoden!
+
         public void RemoveAnimal(Animal animal)
         {
             if (Animals.Remove(animal))

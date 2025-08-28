@@ -7,7 +7,7 @@ namespace ZooManagementSystem
     {
         static void Main(string[] args)
         {
-            // Start hovedmenuen
+            // Starter hovedmenuen
             ZooMenu.Show();
         }
     }

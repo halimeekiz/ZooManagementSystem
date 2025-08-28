@@ -4,8 +4,9 @@ using ZooManagementSystem; // AudioPlayer
 
 namespace ZooManagementSystem.Core
 {
-    // Abstrakt baseklasse for alle dyr (Abstraktion)
-    // Bruges som fælles kontrakt for specifikke dyr (Lion, Elephant, osv.)
+    // Jeg bruger abstraktion her, fordi Animal er en abstrakt baseklasse.
+    // Den definerer en kontrakt (fx SoundText og SoundFile), som alle dyr skal implementere,
+    // men uden at fortælle hvordan det gøres i praksis.
     public abstract class Animal
     {
         // Attributter (Indkapsling af data om et dyr)
@@ -23,7 +24,8 @@ namespace ZooManagementSystem.Core
 
         // Metoder
 
-        // Abstrakt metode – tvinger underklasser til at implementere deres egen lyd (Polymorfi)
+        // Jeg bruger polymorfi her, fordi Lion overskriver SoundText og SoundFile.
+        // Når SayAndPlay() kaldes på en Animal, vil resultatet være forskelligt for hver dyretype.
         public abstract void MakeSound();
 
         // Virtuel standardadfærd – kan overskrives i underklasser (Polymorfi)

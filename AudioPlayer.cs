@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 
 namespace ZooManagementSystem
 {
+    // Jeg bruger indkapsling her, fordi detaljerne om hvordan lyd afspilles er skjult.
+    // Andre klasser kalder bare Play(), uden at vide om det sker via Windows Media Player eller Process.
+
     internal static class AudioPlayer
     {
         // Hold COM-objektet i live (Windows)
@@ -60,6 +63,10 @@ namespace ZooManagementSystem
             Console.WriteLine("[INFO] Ukendt platform – ingen afspiller fundet.");
         }
 
+        // Jeg bruger denne metode til at forsøge at starte et eksternt program i baggrunden.
+        // I mit Zoo-projekt betyder det, at jeg kan afspille dyrelyde med forskellige programmer
+        // afhængigt af om jeg kører på Windows eller et andet system.
+        // Metoden returnerer true hvis programmet starter korrekt, ellers false.
         private static bool TryStart(string fileName, string args)
         {
             try
@@ -75,16 +82,6 @@ namespace ZooManagementSystem
             catch
             {
                 return false;
-            }
-        }
-
-        // (valgfrit) kald fx ved app-exit, hvis du vil frigive COM eksplicit:
-        public static void Dispose()
-        {
-            if (_wmp != null)
-            {
-                try { Marshal.FinalReleaseComObject(_wmp); } catch { /* ignore */ }
-                _wmp = null;
             }
         }
     }
